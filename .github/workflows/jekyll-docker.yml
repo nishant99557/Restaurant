@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Food Restaurant - Order Online</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background-color: #ff4500; color: white; text-align: center; padding: 20px; }
+        nav { background-color: #333; color: white; padding: 10px; text-align: center; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; }
+        section { padding: 20px; max-width: 1200px; margin: auto; }
+        .menu-item { border: 1px solid #ddd; margin: 10px; padding: 10px; display: inline-block; width: 300px; background-color: white; }
+        .menu-item img { width: 100%; height: 200px; object-fit: cover; }
+        button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; }
+        #cart-items { list-style: none; padding: 0; }
+        #cart-items li { margin: 10px 0; display: flex; align-items: center; justify-content: space-between; }
+        #cart-items img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; }
+        .quantity-controls { display: flex; align-items: center; }
+        .quantity-controls button { width: 30px; height: 30px; margin: 0 5px; }
+        #order-form { display: none; background-color: white; padding: 20px; border: 1px solid #ddd; margin-top: 20px; }
+        #track { display: none; }
+        #history-list { list-style: none; padding: 0; }
+        #history-list li { border: 1px solid #ddd; margin: 10px 0; padding: 10px; background-color: white; }
+        footer { background-color: #333; color: white; text-align: center; padding: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Fast Food Restaurant</h1>
+        <p>Order pizza, burgers, fries, sandwiches, cold drinks, and more!</p>
+    </header>
+    <nav>
+        <a href="#menu">Menu</a>
+        <a href="#cart">Cart</a>
+        <a href="#track">Track Order</a>
+        <a href="#history">Order History</a>
+    </nav>
+    <section id="menu">
+        <h2>Our Menu</h2>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop" alt="Pepperoni Pizza">
+            <h3>Pepperoni Pizza</h3>
+            <p>Delicious pizza with pepperoni, cheese, and tomato sauce.</p>
+            <p>Price: ₹1,080</p>
+            <button onclick="addToCart('Pepperoni Pizza', 1080, 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop')">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=200&fit=crop" alt="Cheeseburger">
+            <h3>Cheeseburger</h3>
+            <p>Juicy burger with cheese, lettuce, tomato, and pickles.</p>
+            <p>Price: ₹745</p>
+            <button onclick="addToCart('Cheeseburger', 745, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=200&fit=crop')">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300&h=200&fit=crop" alt="French Fries">
+            <h3>French Fries</h3>
+            <p>Crispy golden fries, perfect as a side.</p>
+            <p>Price: ₹331</p>
+            <button onclick="addToCart('French Fries', 331, 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300&h=200&fit=crop')">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1481070414801-51fd732d7184?w=300&h=200&fit=crop" alt="Club Sandwich">
+            <h3>Club Sandwich</h3>
+            <p>Triple-layered sandwich with turkey, bacon, lettuce, tomato, and mayo.</p>
+            <p>Price: ₹620</p>
+            <button onclick="addToCart('Club Sandwich', 620, 'https://images.unsplash.com/photo-1481070414801-51fd732d7184?w=300&h=200&fit=crop')">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=300&h=200&fit=crop" alt="Cola">
+            <h3>Cola</h3>
+            <p>Refreshing carbonated cola drink, served cold.</p>
+            <p>Price: ₹150</p>
+            <button onclick="addToCart('Cola', 150, 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=300&h=200&fit=crop')">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1541599468348-e96984315621?w=300&h=200&fit=crop" alt="Chicken Nuggets">
+            <h3>Chicken Nuggets</h3>
+            <p>Crispy breaded chicken nuggets, served with dipping sauce.</p>
+            <p>Price: ₹500</p>
+            <button onclick="addToCart('Chicken Nuggets', 500, 'https://images.unsplash.com/photo-1541599468348-e96984315621?w=300&h=200&fit=crop')">Add to Cart</button>
+        </div>
+        <!-- Add more menu items as needed -->
+    </section>
+    <section id="cart">
+        <h2>Your Cart</h2>
+        <ul id="cart-items"></ul>
+        <p>Total: ₹<span id="total">0</span></p>
+        <button onclick="placeOrder()">Place Order</button>
+    </section>
+    <section id="order-form">
+        <h2>Place Your Order</h2>
+        <form id="orderForm">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" required><br><br>
+            <label for="address">Delivery Address:</label><br>
+            <textarea id="address" required></textarea><br><br>
+            <label for="phone">Phone Number:</label><br>
+            <input type="tel" id="phone" required><br><br>
+            <label>Payment Method:</label><br>
+            <input type="radio" id="cod" name="payment" value="COD" required>
+            <label for="cod">Cash on Delivery (COD)</label><br>
+            <input type="radio" id="online" name="payment" value="Online">
+            <label for="online">Online Payment</label><br><br>
+            <button type="submit">Confirm Order</button>
+        </form>
+    </section>
+    <section id="track">
+        <h2>Track Your Order</h2>
+        <p>Enter your order ID: <input type="text" id="orderId"></p>
+        <button onclick="trackOrder()">Track</button>
+        <p id="status">Status: Not available</p>
+    </section>
+    <section id="history">
+        <h2>Order History</h2>
+        <ul id="history-list"></ul>
+        <p id="no-history">No orders placed yet.</p>
+    </section>
+    <footer>
+        <p>&copy; 2023 Fast Food Restaurant. All rights reserved.</p>
+    </footer>
+    <script>
+        let cart = [];
+        let total = 0;
+        let currentOrderId = null;
+        let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+
+        function addToCart(item, price, image) {
+            const existingItem = cart.find(cartItem => cartItem.item === item);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ item, price, image, quantity: 1 });
+            }
+            total += price;
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            cart.forEach((cartItem, index) => {
+                const li = document.createElement('li');
+                const img = document.createElement('img');
+                img.src = cartItem.image;
+                img.alt = cartItem.item;
+                li.appendChild(img);
+                
+                const details = document.createElement('div');
+                details.textContent = `${cartItem.item} - ₹${cartItem.price} x ${cartItem.quantity}`;
+                li.appendChild(details);
+                
+                const controls = document.createElement('div');
+                controls.className = 'quantity-controls';
+                const minusBtn = document.createElement('button');
+                minusBtn.textContent = '-';
+                minusBtn.onclick = () => changeQuantity(index, -1);
+                controls.appendChild(minusBtn);
+                
+                const quantitySpan = document.createElement('span');
+                quantitySpan.textContent = cartItem.quantity;
+                controls.appendChild(quantitySpan);
+                
+                const plusBtn = document.createElement('button');
+                plusBtn.textContent = '+';
+                plusBtn.onclick = () => changeQuantity(index, 1);
+                controls.appendChild(plusBtn);
+                
+                li.appendChild(controls);
+                cartItems.appendChild(li);
+            });
+            document.getElementById('total').textContent = total;
+        }
+
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                total -= cart[index].price * cart[index].quantity;
+                cart.splice(index, 1);
+            } else {
+                total += cart[index].price * delta;
+            }
+            updateCart();
+        }
+
+        function placeOrder() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            document.getElementById('order-form').style.display = 'block';
+            document.getElementById('cart').scrollIntoView();
+        }
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const phone = document.getElementById('phone').value;
+            const payment = document.querySelector('input[name="payment"]:checked').value;
+            
+            // Simulate order placement success
+            currentOrderId = 'ORD' + Math.floor(Math.random() * 1000000);
+            const order = {
+                id: currentOrderId,
+                items: [...cart],
+                total: total,
+                date: new Date().toLocaleString(),
+                status: 'Order Received',
+                payment: payment
+            };
+            orderHistory.push(order);
+            localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+            
+            if (payment === 'Online') {
+                alert(`Redirecting to online payment gateway for ₹${total}. (This is a simulation.)\nOrder ID: ${currentOrderId}`);
+                // In a real app, integrate with a payment provider like Razorpay or Stripe
+            } else {
+                alert(`Order placed successfully! Thank you, ${name}. Your order will be delivered to ${address}. We'll call you at ${phone}. Payment: COD.\nOrder ID: ${currentOrderId}`);
+            }
+            
+            // Show tracking section after successful order
+            document.getElementById('track').style.display = 'block';
+            document.getElementById('orderId').value = currentOrderId; // Pre-fill order ID
+            
+            cart = [];
+            total = 0;
+            updateCart();
+            viewHistory();
+            document.getElementById('order-form').style.display = 'none';
+        });
+
+        function trackOrder() {
+            const orderId = document.getElementById('orderId').value;
+            if (orderId !== currentOrderId) {
+                document.getElementById('status').textContent = 'Status: Invalid Order ID';
+                return;
+            }
+            const statuses = ['Order Received', 'Preparing', 'Out for Delivery', 'Delivered'];
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            document.getElementById('status').textContent = `Status: ${randomStatus}`;
+        }
+
+        function viewHistory() {
+            const historyList = document.getElementById('history-list');
+            const noHistory = document.getElementById('no-history');
+            historyList.innerHTML = '';
+            if (orderHistory.length === 0) {
+                noHistory.style.display = 'block';
+                return;
+            }
+            noHistory.style.display = 'none';
+            orderHistory.forEach(order => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <strong>Order ID:</strong> ${order.id}<br>
+                    <strong>Items:</strong> ${order.items.map(i => `${i.item} x ${i.quantity}`).join(', ')}<br>
+                    <strong>Total:</strong> ₹${order.total}<br>
+                    <strong>Date:</strong> ${order.date}<br>
+                    <strong>Payment:</strong> ${order.payment}<br>
+                    <strong>Status:</strong> ${order.status}
+                `;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Load history on page load
+        window.onload = viewHistory;
+    </script>
+</body>
+</html>
